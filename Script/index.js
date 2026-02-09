@@ -54,15 +54,18 @@ const displayvideoDetails = (video) => {
     `
 }
 
-function loadVideosByCategory() {
-    fetch("https://openapi.programming-hero.com/api/phero-tube/videos")
+function loadVideosByCategory(searchText="") {
+    showLoader();   
+    fetch("https://openapi.programming-hero.com/api/phero-tube/videos?title="+searchText)
     .then(res=>res.json())
     .then(data => {
+        
         displayVideos(data.videos);
         removeActiveClasses();
         const allButton = document.getElementById("btn-all");
         allButton.classList.add("active");
     })
+    
 }
 
 const displayVideos = (videos)=> {
@@ -100,7 +103,8 @@ const displayVideos = (videos)=> {
             </div>
             <div class="intro">
                 <h2 class="text-sm font-semibold">${element.title}</h2>
-                <p class="text-sm text-gray-400">${element.authors[0].profile_name} <img class="w-5 h-5 inline-block" src="https://img.icons8.com/?size=48&id=98A4yZTt9abw&format=png" alt=""></p>
+                <p class="text-sm text-gray-400">${element.authors[0].profile_name} 
+                ${element.authors[0].verified == true ? '<img class="w-5 h-5 inline-block" src="https://img.icons8.com/?size=48&id=98A4yZTt9abw&format=png" alt="">' : ''}</p>
                 <p class="text-sm text-gray-400">${element.others.views} views</p>
             </div>
         </div>
@@ -109,6 +113,7 @@ const displayVideos = (videos)=> {
         `
         videosContainer.append(videoCard);
     });
+    hideLoader();
 
 }
 
@@ -126,4 +131,17 @@ const loadcategoriesVideos = (id)=>{
     })
 }
 
+document.getElementById("search-input").addEventListener("keyup", (event)=>{
+    const searchText = event.target.value;
+    loadVideosByCategory(searchText)
+})
+
+const showLoader = ()=>{
+    document.getElementById("loader").classList.remove("hidden");
+    document.getElementById("video-container").classList.add("hidden");
+}
+const hideLoader = ()=>{
+    document.getElementById("loader").classList.add("hidden");
+    document.getElementById("video-container").classList.remove("hidden");
+}
 loadCategories();
